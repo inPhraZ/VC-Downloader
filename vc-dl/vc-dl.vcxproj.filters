@@ -21,10 +21,19 @@
     <ClCompile Include="nativeMessaging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="download.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="nativeMessaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="download.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
