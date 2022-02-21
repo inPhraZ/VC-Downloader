@@ -4,6 +4,8 @@
 #include <fcntl.h>
 #include <io.h>
 
+#define     MAX_MSG_FROM_NATIVE     (1024*1024)
+
 // disable IO buffering of stdio and set io in Binary mode
 int setupIO(FILE* file);
 
@@ -36,13 +38,17 @@ int setupIO(FILE* file)
 
 unsigned int sendToExtension(const char* msg)
 {
+    unsigned int len;
     if (!msg)
         return 0;
 
+    len = strnlen(msg, MAX_MSG_FROM_NATIVE);
+    fwrite(&len, sizeof(unsigned int), 1, stdout);
+    return fwrite(msg, 1, len, stdout);
 }
+
 char* recieveFromExtension(unsigned int* len)
-{
-    
+{   
     unsigned int sz;
     fread(&sz, sizeof(unsigned int), 1, stdin);
     *len = sz;
