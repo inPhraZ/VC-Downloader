@@ -5,7 +5,7 @@ if (docUrl.search(vcmPattern) == 0) {
     var userAns = window.confirm("آیا تمایل به دانلود این کلاس دارید؟")
     if (userAns == true) {
         chrome.runtime.sendMessage({
-            type: 'url',
+            type: document.title,
             value: document.URL
         });
     }
