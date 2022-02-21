@@ -19,16 +19,16 @@ chrome.runtime.onMessage.addListener(
         console.log('URL length: ' + g_url.length)
         console.log('URL to send: ' + g_url)
         console.log('Cookies length: ' + g_cookies.length)
-        console.log('Cookies to send: ' +g_cookies)
+        console.log('Cookies to send: ' + g_cookies)
 
         var port = chrome.runtime.connectNative("ir.ac.hormozgan.downloader.vc")
-        port.postMessage("Hello")
+        port.postMessage(g_url)
         
         port.onMessage.addListener(function (message) {
-            if (message == 'URL')
-                port.postMessage(g_url)
-            if (message == 'COOKIE')
+            if (message == g_url) {
+                console.log('Narie requested for Cookies')
                 port.postMessage(g_cookies)
+            }
             else
                 console.log('Recieved: ' +message)
         })
