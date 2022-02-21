@@ -5,6 +5,7 @@
 #include <io.h>
 
 #include "nativeMessaging.h"
+#include "download.h"
 
 // disable IO buffering of stdio and set io in Binary mode
 int setupIO(FILE* file);
