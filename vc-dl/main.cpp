@@ -11,12 +11,14 @@ int setupIO(FILE* file);
 
 int main()
 {
-    unsigned int url_len, cookie_len;
-    char* url, * cookies;
+    unsigned int title_len, url_len, cookie_len;
+    char* title, * url, * cookies;
 
     if (setupIO(stdin) != 0 || setupIO(stdout) != 0)
         exit(EXIT_FAILURE);
 
+    title = recieveFromExtension(&title_len);
+    sendToExtension(title);
     url = recieveFromExtension(&url_len);
     sendToExtension(url);
     cookies = recieveFromExtension(&cookie_len);
@@ -24,11 +26,13 @@ int main()
     FILE* fp = NULL;
     fopen_s(&fp, "Data.txt", "w");
     if (fp) {
+        fprintf(fp, "Title: %s\n", title);
         fprintf(fp, "URL: %s\n", url);
         fprintf(fp, "Cookies: %s\n", cookies);
         fclose(fp);
     }
 
+    free(title);
     free(url);
     free(cookies);
 
