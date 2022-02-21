@@ -4,6 +4,9 @@ let docUrl = document.URL
 if (docUrl.search(vcmPattern) == 0) {
     var userAns = window.confirm("آیا تمایل به دانلود این کلاس دارید؟")
     if (userAns == true) {
-        document.write("Download")
+        chrome.runtime.sendMessage({
+            type: 'url',
+            value: document.URL
+        });
     }
 }
