@@ -1,3 +1,4 @@
+var g_title = ''
 var g_url = ''
 var g_cookies = ''
 
@@ -15,22 +16,29 @@ chrome.cookies.onChanged.addListener(function (changeInfo) {
 
 chrome.runtime.onMessage.addListener(
     function (request, sender) {
+        g_title = request.type
         g_url = request.value
+        console.log('title length: ' + g_title.length)
+        console.log('Title to send: ' + g_title)
         console.log('URL length: ' + g_url.length)
         console.log('URL to send: ' + g_url)
         console.log('Cookies length: ' + g_cookies.length)
         console.log('Cookies to send: ' + g_cookies)
 
         var port = chrome.runtime.connectNative("ir.ac.hormozgan.downloader.vc")
-        port.postMessage(g_url)
+        port.postMessage(g_title)
         
         port.onMessage.addListener(function (message) {
-            if (message == g_url) {
+            if (message == g_title) {
+                console.log('Request for URL')
+                port.postMessage(g_url)
+            }
+            else if (message == g_url) {
                 console.log('Narie requested for Cookies')
                 port.postMessage(g_cookies)
             }
             else
-                console.log('Recieved: ' +message)
+                console.log('Recieved: ' + message)
         })
 
         port.onDisconnect.addListener(function (error) {
