@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <io.h>
 
-#define     MAX_MSG_FROM_NATIVE     (1024*1024)
+#define     MAX_MSG_LEN     (1024*1024)
 
 // disable IO buffering of stdio and set io in Binary mode
 int setupIO(FILE* file);
@@ -17,8 +17,26 @@ char* recieveFromExtension(unsigned int* len);
 
 int main()
 {
+    unsigned int url_len, cookie_len;
+    char* url, * cookies;
+
     if (setupIO(stdin) != 0 || setupIO(stdout) != 0)
         exit(EXIT_FAILURE);
+
+    url = recieveFromExtension(&url_len);
+    sendToExtension(url);
+    cookies = recieveFromExtension(&cookie_len);
+
+    FILE* fp = NULL;
+    fopen_s(&fp, "Data.txt", "w");
+    if (fp) {
+        fprintf(fp, "URL: %s\n", url);
+        fprintf(fp, "Cookies: %s\n", cookies);
+        fclose(fp);
+    }
+
+    free(url);
+    free(cookies);
 
 	return 0;
 }
@@ -42,7 +60,7 @@ unsigned int sendToExtension(const char* msg)
     if (!msg)
         return 0;
 
-    len = strnlen(msg, MAX_MSG_FROM_NATIVE);
+    len = strnlen(msg, MAX_MSG_LEN);
     fwrite(&len, sizeof(unsigned int), 1, stdout);
     return fwrite(msg, 1, len, stdout);
 }
