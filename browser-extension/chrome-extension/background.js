@@ -1,3 +1,4 @@
+var g_url = ''
 var g_cookies = ''
 
 chrome.cookies.onChanged.addListener(function (changeInfo) {
@@ -13,7 +14,26 @@ chrome.cookies.onChanged.addListener(function (changeInfo) {
 });
 
 chrome.runtime.onMessage.addListener(
-    function(request, sender) {
-        console.log(request.value)
-        console.log(g_cookies)
+    function (request, sender) {
+        g_url = request.value
+        console.log('URL length: ' + g_url.length)
+        console.log('URL to send: ' + g_url)
+        console.log('Cookies length: ' + g_cookies.length)
+        console.log('Cookies to send: ' +g_cookies)
+
+        var port = chrome.runtime.connectNative("ir.ac.hormozgan.downloader.vc")
+        port.postMessage("Hello")
+        
+        port.onMessage.addListener(function (message) {
+            if (message == 'URL')
+                port.postMessage(g_url)
+            if (message == 'COOKIE')
+                port.postMessage(g_cookies)
+            else
+                console.log('Recieved: ' +message)
+        })
+
+        port.onDisconnect.addListener(function (error) {
+            console.log('Disconnected')
+        })
 })
