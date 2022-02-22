@@ -32,14 +32,23 @@ static char *create_url(const char *_title, const char *_url)
 	return url;
 }
 
-int download_archive(const char* _title, const char* _url, const char* _cookies)
+int download_archive(download_struct *dlinfo)
 {
-	if (!_title || !_url)
+	if (!dlinfo)
+		return -1;
+	if (!dlinfo->title || !dlinfo->url)
 		return -1;
 
-	char* url = create_url(_title, _url);
-	printf("%s\n", url);
-	free(url);
+	char* url = create_url(dlinfo->title, dlinfo->url);
+	free(dlinfo->url);
+	dlinfo->url = url;
+
+	FILE* fp;
+	fopen_s(&fp, "download.txt", "w");
+	fprintf(fp, "%s\n", dlinfo->title);
+	fprintf(fp, "%s\n", dlinfo->url);
+	fprintf(fp, "%s\n", dlinfo->cookies);
+	fclose(fp);
 
 	return 0;
 }
