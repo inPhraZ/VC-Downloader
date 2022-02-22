@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
@@ -9,34 +10,24 @@
 
 // disable IO buffering of stdio and set io in Binary mode
 int setupIO(FILE* file);
+download_struct *getInfoFromExtension();
+
+char* standard_msg(const char* _msg);
 
 int main()
 {
-    unsigned int title_len, url_len, cookie_len;
-    char* title, * url, * cookies;
-
     if (setupIO(stdin) != 0 || setupIO(stdout) != 0)
         exit(EXIT_FAILURE);
 
-    title = recieveFromExtension(&title_len);
-    sendToExtension(title);
-    url = recieveFromExtension(&url_len);
-    sendToExtension(url);
-    cookies = recieveFromExtension(&cookie_len);
-
-    FILE* fp = NULL;
-    fopen_s(&fp, "Data.txt", "w");
-    if (fp) {
-        fprintf(fp, "Title: %s\n", title);
-        fprintf(fp, "URL: %s\n", url);
-        fprintf(fp, "Cookies: %s\n", cookies);
-        fclose(fp);
+    download_struct* dlinfo;
+    dlinfo = getInfoFromExtension();
+    if (!dlinfo) {
+        perror("Allocating memory for dlinfo");
+        exit(EXIT_FAILURE);
     }
 
-    free(title);
-    free(url);
-    free(cookies);
-
+    free(dlinfo);
+    
 	return 0;
 }
 
@@ -51,4 +42,43 @@ int setupIO(FILE* file)
         return -1;
     }
     return 0;
+}
+
+download_struct* getInfoFromExtension()
+{
+    download_struct* dlinfo;
+    unsigned int title_len, url_len, cookie_len;
+    char* title, * url, * cookies;
+
+    title = recieveFromExtension(&title_len);
+    sendToExtension(title);
+    url = recieveFromExtension(&url_len);
+    sendToExtension(url);
+    cookies = recieveFromExtension(&cookie_len);
+
+    dlinfo = (download_struct*)malloc(sizeof(download_struct));
+    if (!dlinfo)
+        return NULL;
+    dlinfo->title = standard_msg(title);
+    dlinfo->url = standard_msg(url);
+    dlinfo->cookies = standard_msg(cookies);
+
+    free(title);
+    free(url);
+    free(cookies);
+    
+    return dlinfo;
+}
+
+char* standard_msg(const char* _msg)
+{
+    char* msg = NULL;
+    std::string tmp(_msg);
+
+    if (tmp.empty())
+        return NULL;
+
+    tmp.erase(remove(tmp.begin(), tmp.end(), '\"'), tmp.end());
+    msg = _strdup(tmp.c_str());
+    return msg;
 }
