@@ -11,7 +11,9 @@ chrome.cookies.onChanged.addListener(function (changeInfo) {
     var domain = cookie.domain
     var value = cookie.value
 
-    g_cookies += name + '=' + value + ';'
+    if (g_cookies.includes(name) == false)
+        g_cookies += name + '=' + value + ';'
+    
 });
 
 chrome.runtime.onMessage.addListener(
@@ -34,7 +36,7 @@ chrome.runtime.onMessage.addListener(
                 port.postMessage(g_url)
             }
             else if (message == g_url) {
-                console.log('Narie requested for Cookies')
+                console.log('Natie requested for Cookies')
                 port.postMessage(g_cookies)
             }
             else
@@ -44,4 +46,5 @@ chrome.runtime.onMessage.addListener(
         port.onDisconnect.addListener(function (error) {
             console.log('Disconnected')
         })
+
 })
