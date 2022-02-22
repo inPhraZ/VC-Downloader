@@ -1,3 +1,6 @@
+#include <windows.h>
+#include <processthreadsapi.h>
+#include <UserEnv.h>
 #include <cstdlib>
 #include <cstring>
 #include <curl/curl.h>
@@ -22,6 +25,24 @@ static char* create_filename_zip(const char* title)
 	return filename;
 }
 
+static char* get_downloads_dir()
+{
+	HANDLE token = 0;
+	CHAR	buff[MAX_PATH];
+	DWORD	size = MAX_PATH;
+	char* dldir = NULL;
+
+	OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &token);
+	GetUserProfileDirectoryA(token, buff, &size);
+	CloseHandle(token);
+
+	dldir = (char*)malloc(MAX_PATH + 1);
+	if (!dldir)
+		return NULL;
+	sprintf_s(dldir, MAX_PATH, "%s\\Downloads\\", buff);
+	return dldir;
+}
+
 static void save_stat(download_struct* dlinfo)
 {
 	FILE* fp = NULL;
@@ -31,6 +52,7 @@ static void save_stat(download_struct* dlinfo)
 
 	fprintf(fp, "Title: %s\n", dlinfo->title);
 	fprintf(fp, "URL: %s\n", dlinfo->url);
+	fprintf(fp, "Downloads: %s\n", dlinfo->dlpath);
 	fprintf(fp, "Cookies: %s\n", dlinfo->cookies);
 	fprintf(fp, "res: %s\n", curl_easy_strerror(dlinfo->res));
 	fclose(fp);
@@ -45,6 +67,9 @@ static size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdat
 
 static char *create_url(const char *_filename, const char *_url)
 {
+	if (!_filename || !_url)
+		return NULL;
+
 	const char* first = _url;
 	const char* last = strchr(_url, QUESTION_MARK);
 	const char* pre = "output/";
@@ -79,8 +104,12 @@ int download_archive(download_struct *dlinfo)
 
 	dlinfo->filename = create_filename_zip(dlinfo->title);
 	char* url = create_url(dlinfo->filename, dlinfo->url);
+	if (!url)
+		return -1;
 	free(dlinfo->url);
 	dlinfo->url = url;
+
+	dlinfo->dlpath = get_downloads_dir();
 
 	save_stat(dlinfo);
 
