@@ -28,7 +28,7 @@ int main()
     download_archive(dlinfo);
     free(dlinfo);
 
-	return 0;
+    return 0;
 }
 
 int setupIO(FILE* file)
