@@ -120,6 +120,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>E:\Codes\libcurl\curl-7.81.0-win32-mingw\lib\libcurl.a;E:\Codes\libcurl\curl-7.81.0-win32-mingw\lib\libcurl.dll.a;</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -132,8 +135,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.a;E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>Advapi32.lib;Userenv.lib;E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.a;E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.dll.a</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,6 +158,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.a;E:\Codes\libcurl\curl-7.81.0-win64-mingw\lib\libcurl.dll.a</AdditionalDependencies>
     </Link>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="download.cpp" />
