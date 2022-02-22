@@ -12,4 +12,12 @@ typedef struct {
 	CURLcode res;
 } download_struct;
 
-int download_archive(download_struct *dlinfo);
+void free_download_struct(download_struct* dlinfo);
+
+#define free_dlinfo(dlinfo)		\
+do {							\
+	free(dlinfo->title);		\
+	free(dlinfo->url);			\
+	free(dlinfo->cookies);		\
+	free(dlinfo->filename);		\
+} while (0)
