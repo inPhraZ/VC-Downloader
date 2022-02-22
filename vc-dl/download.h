@@ -8,6 +8,7 @@ typedef struct {
 	char* cookies;
 	CURL* curl;
 	CURLcode res;
+	FILE* fp;
 } download_struct;
 
 int download_archive(download_struct *dlinfo);
