@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstring>
 #include <curl/curl.h>
 
@@ -43,12 +44,10 @@ int download_archive(download_struct *dlinfo)
 	free(dlinfo->url);
 	dlinfo->url = url;
 
-	FILE* fp;
-	fopen_s(&fp, "download.txt", "w");
-	fprintf(fp, "%s\n", dlinfo->title);
-	fprintf(fp, "%s\n", dlinfo->url);
-	fprintf(fp, "%s\n", dlinfo->cookies);
-	fclose(fp);
+	dlinfo->curl = curl_easy_init();
+	curl_easy_setopt(dlinfo->curl, CURLOPT_URL, "https://example.com");
+	dlinfo->res = curl_easy_perform(dlinfo->curl);
+	curl_easy_cleanup(dlinfo->curl);
 
 	return 0;
 }
