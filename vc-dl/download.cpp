@@ -10,13 +10,14 @@ static void save_stat(download_struct* dlinfo)
 {
 	FILE* fp = NULL;
 	fopen_s(&fp, "stat.txt", "w");
-	if (fp) {
-		fprintf(fp, "Title: %s\n", dlinfo->title);
-		fprintf(fp, "URL: %s\n", dlinfo->url);
-		fprintf(fp, "Cookies: %s\n", dlinfo->cookies);
-		fprintf(fp, "res: %s\n", curl_easy_strerror(dlinfo->res));
-		fclose(fp);
-	}
+	if (!fp)
+		return;
+
+	fprintf(fp, "Title: %s\n", dlinfo->title);
+	fprintf(fp, "URL: %s\n", dlinfo->url);
+	fprintf(fp, "Cookies: %s\n", dlinfo->cookies);
+	fprintf(fp, "res: %s\n", curl_easy_strerror(dlinfo->res));
+	fclose(fp);
 }
 
 static size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdata)
@@ -66,9 +67,10 @@ int download_archive(download_struct *dlinfo)
 
 	save_stat(dlinfo);
 
+	
 	/*
 	dlinfo->fp = NULL;
-	fopen_s(&dlinfo->fp, "output.zip", "wb");
+	fopen_s(&dlinfo->fp, , "wb");
 	if (!dlinfo->fp)
 		return -1;
 
