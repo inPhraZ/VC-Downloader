@@ -7,12 +7,13 @@ typedef struct {
 	char* url;
 	char* cookies;
 	char* filename;
+	char* dlpath;
 	FILE* fp;
 	CURL* curl;
 	CURLcode res;
 } download_struct;
 
-void free_download_struct(download_struct* dlinfo);
+int download_archive(download_struct* dlinfo);
 
 #define free_dlinfo(dlinfo)		\
 do {							\
@@ -20,4 +21,6 @@ do {							\
 	free(dlinfo->url);			\
 	free(dlinfo->cookies);		\
 	free(dlinfo->filename);		\
+	free(dlinfo->dlpath);		\
+	dlinfo = NULL;				\
 } while (0)
