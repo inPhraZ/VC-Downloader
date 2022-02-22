@@ -25,7 +25,7 @@ int main()
         perror("Allocating memory for dlinfo");
         exit(EXIT_FAILURE);
     }
-
+    download_archive(dlinfo);
     free(dlinfo);
     
 	return 0;
