@@ -1,3 +1,9 @@
 #pragma once
 
-int download_archive(const char *_title, const char *_url, const char *_cookies);
+typedef struct {
+	char* title;
+	char* url;
+	char* cookies;
+} download_struct;
+
+int download_archive(download_struct *dlinfo);
