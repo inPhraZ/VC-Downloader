@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <io.h>
+#include <windows.h>
+#include <UserEnv.h>
 
 #include "nativeMessaging.h"
 #include "download.h"
@@ -26,9 +28,9 @@ int main()
         exit(EXIT_FAILURE);
     }
     download_archive(dlinfo);
-    free(dlinfo);
+    free_dlinfo(dlinfo);
 
-    return 0;
+	return 0;
 }
 
 int setupIO(FILE* file)
