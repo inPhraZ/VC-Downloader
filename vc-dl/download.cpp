@@ -6,6 +6,22 @@
 
 #define		QUESTION_MARK	0x00003F
 
+static char* create_filename_zip(const char* title)
+{
+	char* filename = NULL;
+	int len = 0;
+	if (!title)
+		return NULL;
+
+	len = strlen(title) + 5;			// .zip + \0
+	filename = (char*)malloc(len);
+	if (!filename)
+		return NULL;
+	memset(filename, 0, len);
+	sprintf_s(filename, len, "%s.zip", title);
+	return filename;
+}
+
 static void save_stat(download_struct* dlinfo)
 {
 	FILE* fp = NULL;
@@ -27,18 +43,18 @@ static size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdat
 	return size * nmemb;
 }
 
-static char *create_url(const char *_title, const char *_url)
+static char *create_url(const char *_filename, const char *_url)
 {
 	const char* first = _url;
 	const char* last = strchr(_url, QUESTION_MARK);
 	const char* pre = "output/";
-	const char* post = ".zip?download=zip";
+	const char* post = "?download=zip";
 
 	int len = (int)(last - first);
 	int pre_len = strlen(pre);
-	int title_len = strlen(_title);
+	int fname_len = strlen(_filename);
 	int post_len = strlen(post);
-	int url_len = len + pre_len + title_len + post_len + 1;
+	int url_len = len + pre_len + fname_len + post_len + 1;
 
 	char* url = (char*)malloc(url_len);
 	if (!url) {
@@ -48,7 +64,7 @@ static char *create_url(const char *_title, const char *_url)
 	memset(url, 0, url_len);
 	strncpy_s(url, url_len, _url, len);
 	strncat_s(url, url_len, pre, pre_len);
-	strncat_s(url, url_len, _title, title_len);
+	strncat_s(url, url_len, _filename, fname_len);
 	strncat_s(url, url_len, post, post_len);
 
 	return url;
@@ -61,7 +77,8 @@ int download_archive(download_struct *dlinfo)
 	if (!dlinfo->title || !dlinfo->url)
 		return -1;
 
-	char* url = create_url(dlinfo->title, dlinfo->url);
+	dlinfo->filename = create_filename_zip(dlinfo->title);
+	char* url = create_url(dlinfo->filename, dlinfo->url);
 	free(dlinfo->url);
 	dlinfo->url = url;
 
