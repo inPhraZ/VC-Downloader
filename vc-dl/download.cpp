@@ -7,8 +7,9 @@
 
 #include "download.h"
 
-#define		QUESTION_MARK	0x00003F
+#define		QUESTION_MARK	0x00003F	// \"
 
+// return title.zip
 static char* create_filename_zip(const char* title)
 {
 	char* filename = NULL;
@@ -25,6 +26,7 @@ static char* create_filename_zip(const char* title)
 	return filename;
 }
 
+// user's default downloads: C:\Users\username\Downloads
 static char* get_downloads_dir()
 {
 	HANDLE token = 0;
@@ -58,7 +60,8 @@ static void save_stat(download_struct* dlinfo)
 	fclose(fp);
 }
 
-static size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdata)
+// curl wtite callback
+static size_t download_write_callback(char* ptr, size_t size, size_t nmemb, void* userdata)
 {
 	download_struct* dlinfo = (download_struct*)userdata;
 	fwrite(ptr, size, nmemb, dlinfo->fp);
@@ -112,7 +115,6 @@ int download_archive(download_struct *dlinfo)
 	dlinfo->dlpath = get_downloads_dir();
 
 	save_stat(dlinfo);
-
 	
 	/*
 	dlinfo->fp = NULL;
