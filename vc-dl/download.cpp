@@ -68,6 +68,18 @@ static size_t download_write_callback(char* ptr, size_t size, size_t nmemb, void
 	return size * nmemb;
 }
 
+#if 0
+// curl progress callback
+static int download_progress_callback(void* clientp,
+	double dltotal,
+	double dlnow,
+	double ultotal,
+	double ulnow)
+{
+	return 0;
+}
+#endif
+
 static char *create_url(const char *_filename, const char *_url)
 {
 	if (!_filename || !_url)
@@ -117,9 +129,10 @@ int download_archive(download_struct *dlinfo)
 
 	save_stat(dlinfo);
 	
-	/*
+	char filename[MAX_PATH];
+	sprintf_s(filename, MAX_PATH, "%s%s", dlinfo->dlpath, dlinfo->filename);
 	dlinfo->fp = NULL;
-	fopen_s(&dlinfo->fp, , "wb");
+	fopen_s(&dlinfo->fp, filename, "wb");
 	if (!dlinfo->fp)
 		return -1;
 
@@ -129,10 +142,11 @@ int download_archive(download_struct *dlinfo)
 	curl_easy_setopt(dlinfo->curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	curl_easy_setopt(dlinfo->curl, CURLOPT_WRITEFUNCTION, download_write_callback);
 	curl_easy_setopt(dlinfo->curl, CURLOPT_WRITEDATA, (void *)dlinfo);
+	//curl_easy_setopt(dlinfo->curl, CURLOPT_PROGRESSFUNCTION, download_progress_callback);
+	//curl_easy_setopt(dlinfo->curl, CURLOPT_PROGRESSDATA, NULL);
 	dlinfo->res = curl_easy_perform(dlinfo->curl);
 	fclose(dlinfo->fp);
 	curl_easy_cleanup(dlinfo->curl);
-	*/
 
 	return 0;
 }
