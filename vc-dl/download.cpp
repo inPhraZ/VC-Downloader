@@ -26,8 +26,8 @@ static char* create_filename_zip(const char* title)
 	return filename;
 }
 
-// user's default downloads: C:\Users\username\Downloads
-static char* get_downloads_dir()
+// User's default download directory + title (ex: C:\Users\Downloads\title)
+static char* get_download_dir(const char *title)
 {
 	HANDLE token = 0;
 	CHAR	buff[MAX_PATH];
@@ -41,7 +41,7 @@ static char* get_downloads_dir()
 	dldir = (char*)malloc(MAX_PATH + 1);
 	if (!dldir)
 		return NULL;
-	sprintf_s(dldir, MAX_PATH, "%s\\Downloads\\", buff);
+	sprintf_s(dldir, MAX_PATH, "%s\\Downloads\\%s\\", buff, title);
 	return dldir;
 }
 
@@ -112,7 +112,7 @@ int download_archive(download_struct *dlinfo)
 	free(dlinfo->url);
 	dlinfo->url = url;
 
-	dlinfo->dlpath = get_downloads_dir();
+	dlinfo->dlpath = get_download_dir(dlinfo->title);
 
 	save_stat(dlinfo);
 	
