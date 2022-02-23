@@ -127,7 +127,7 @@ int download_archive(download_struct *dlinfo)
 	curl_easy_setopt(dlinfo->curl, CURLOPT_URL, dlinfo->url);
 	curl_easy_setopt(dlinfo->curl, CURLOPT_COOKIE, dlinfo->cookies);
 	curl_easy_setopt(dlinfo->curl, CURLOPT_SSL_VERIFYPEER, 0L);
-	curl_easy_setopt(dlinfo->curl, CURLOPT_WRITEFUNCTION, write_callback);
+	curl_easy_setopt(dlinfo->curl, CURLOPT_WRITEFUNCTION, download_write_callback);
 	curl_easy_setopt(dlinfo->curl, CURLOPT_WRITEDATA, (void *)dlinfo);
 	dlinfo->res = curl_easy_perform(dlinfo->curl);
 	fclose(dlinfo->fp);
