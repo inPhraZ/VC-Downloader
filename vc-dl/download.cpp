@@ -113,6 +113,7 @@ int download_archive(download_struct *dlinfo)
 	dlinfo->url = url;
 
 	dlinfo->dlpath = get_download_dir(dlinfo->title);
+	CreateDirectoryA(dlinfo->dlpath, NULL);
 
 	save_stat(dlinfo);
 	
