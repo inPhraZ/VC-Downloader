@@ -36,7 +36,7 @@ chrome.runtime.onMessage.addListener(
                 port.postMessage(g_url)
             }
             else if (message == g_url) {
-                console.log('Natie requested for Cookies')
+                console.log('Request for Cookies')
                 port.postMessage(g_cookies)
             }
             else
