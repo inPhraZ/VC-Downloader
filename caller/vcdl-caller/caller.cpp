@@ -1,9 +1,9 @@
-#include <iostream>
 #include <cstdlib>
 #include <cstdio>
 #include <fcntl.h>
-#include <Windows.h>
 #include <io.h>
+#include <Windows.h>
+#include <processthreadsapi.h>
 
 #include "nativeMessaging.h"
 
@@ -40,6 +40,33 @@ int main()
   free(title);
   free(url);
   free(cookies);
+
+#if 0
+  LPSTARTUPINFOA  startup_info;
+  LPPROCESS_INFORMATION proc_info;
+
+  startup_info = (LPSTARTUPINFOA)malloc(sizeof(STARTUPINFOA));
+  if (!startup_info) {
+    perror("STARTUPINFO");
+    free(lpCommandLine);
+    exit(EXIT_FAILURE);
+  }
+  proc_info  = (LPPROCESS_INFORMATION)malloc(sizeof(PROCESS_INFORMATION));
+  if (!proc_info) {
+    perror("PROCESS_INFORMATION");
+    free(lpCommandLine);
+    free(startup_info);
+    exit(EXIT_FAILURE);
+  }
+
+  ZeroMemory(startup_info, sizeof(STARTUPINFOA));
+  ZeroMemory(proc_info, sizeof(PROCESS_INFORMATION));
+
+  BOOL res = CreateProcessA("", lpCommandLine, 
+    NULL, NULL, FALSE, 0, NULL, NULL,
+    startup_info, proc_info);
+#endif
+
   free(lpCommandLine);
 
   return 0;
