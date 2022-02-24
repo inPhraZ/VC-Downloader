@@ -2,8 +2,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <fcntl.h>
-#include <io.h>
 #include <Windows.h>
+#include <io.h>
 
 #include "nativeMessaging.h"
 
@@ -12,12 +12,12 @@ int setupIO(FILE* file);
 
 int main()
 {
-  if (setupIO(stdin) != 0 || setupIO(stdout) != 0)
-    exit(EXIT_FAILURE);
-  
   size_t tlen, ulen, clen, total;
   char* title, * url, * cookies;
   LPSTR lpCommandLine = NULL;
+
+  if (setupIO(stdin) != 0 || setupIO(stdout) != 0)
+    exit(EXIT_FAILURE);
 
   title = recieveFromExtension(&tlen);
   sendToExtension(title);
@@ -42,7 +42,7 @@ int main()
   free(cookies);
   free(lpCommandLine);
 
-	return 0;
+  return 0;
 }
 
 int setupIO(FILE* file)
