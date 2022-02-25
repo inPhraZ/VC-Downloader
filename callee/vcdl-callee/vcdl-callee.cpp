@@ -14,34 +14,7 @@ HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 
 // parse command line arguments to extract (Title, URL, Cookies)
-int ParseCmdLine(LPDOWNLOADINFO dlinfo);
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
-{
-  UNREFERENCED_PARAMETER(hPrevInstance);
-  UNREFERENCED_PARAMETER(lpCmdLine);
-
-  // Initialize szTitle
-  LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-
-  LPDOWNLOADINFO dlinfo = DownloadInfoAlloc();
-  if (!dlinfo)
-    exit(EXIT_FAILURE);
-
-  if (ParseCmdLine(dlinfo) == -1) {
-    DownloadInfoFree(dlinfo);
-    exit(EXIT_FAILURE);
-  }
-
-  DownloadInfoFree(dlinfo);
-
-  return 0;
-}
-
-int ParseCmdLine(LPDOWNLOADINFO dlinfo)
+static int ParseCmdLine(LPDOWNLOADINFO dlinfo)
 {
   if (!dlinfo)
     return -1;
@@ -68,6 +41,66 @@ int ParseCmdLine(LPDOWNLOADINFO dlinfo)
     !dlinfo->URL ||
     !dlinfo->Cookies)
     return -1;
+
+  return 0;
+}
+
+
+// Get path from user to save archive
+static int GetPathFromUser(LPDOWNLOADINFO dlinfo)
+{
+  OPENFILENAME ofn;
+  if (!dlinfo)
+    return -1;
+
+  dlinfo->Path = (LPWSTR)malloc(MAX_PATH + 1);
+  if (!dlinfo->Path)
+    return -1;
+  ZeroMemory(dlinfo->Path, MAX_PATH + 1);
+  ZeroMemory(&ofn, sizeof(OPENFILENAME));
+
+  ofn.lStructSize = sizeof(OPENFILENAME);
+  ofn.hwndOwner = NULL;
+  ofn.lpstrTitle = szTitle;
+  ofn.lpstrFilter = L"Archive Files (*.zip)\0*.zip\0All Files (*.*)\0*.*\0";
+  ofn.lpstrFile = dlinfo->Path;
+  ofn.nMaxFile = MAX_PATH;
+  ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+  ofn.lpstrDefExt = L"zip";
+  if (GetSaveFileName(&ofn)) {
+    MessageBox(NULL, dlinfo->Path, L"Path", MB_OK);
+    return 0;
+  }
+
+  return -1;
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+                     _In_opt_ HINSTANCE hPrevInstance,
+                     _In_ LPWSTR    lpCmdLine,
+                     _In_ int       nCmdShow)
+{
+  UNREFERENCED_PARAMETER(hPrevInstance);
+  UNREFERENCED_PARAMETER(lpCmdLine);
+
+  // Initialize szTitle
+  LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+
+  LPDOWNLOADINFO dlinfo = DownloadInfoAlloc();
+  if (!dlinfo)
+    exit(EXIT_FAILURE);
+
+  if (ParseCmdLine(dlinfo) == -1) {
+    DownloadInfoFree(dlinfo);
+    exit(EXIT_FAILURE);
+  }
+
+  if (GetPathFromUser(dlinfo) == -1) {
+    DownloadInfoFree(dlinfo);
+    exit(EXIT_FAILURE);
+  }
+  
+  DownloadInfoFree(dlinfo);
 
   return 0;
 }

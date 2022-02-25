@@ -6,6 +6,7 @@
 // Windows Header Files
 #include <windows.h>
 #include <shellapi.h>
+#include <commdlg.h>
 
 // C RunTime Header Files
 #include <stdlib.h>

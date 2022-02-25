@@ -3,6 +3,7 @@
 #include "framework.h"
 
 typedef struct {
+  LPWSTR  Path;
   LPWSTR  Title;
   LPWSTR  URL;
   LPWSTR  Cookies;
@@ -15,6 +16,7 @@ LPDOWNLOADINFO    DownloadInfoAlloc();
 
 #define DownloadInfoFree(dlinfo)    \
 do {                                \
+  free(dlinfo->Path);               \
   free(dlinfo->Title);              \
   free(dlinfo->URL);                \
   free(dlinfo->Cookies);            \
