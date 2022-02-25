@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstdio>
+#include <cstdint>
 #include <fcntl.h>
 #include <io.h>
 #include <Windows.h>
@@ -12,7 +13,7 @@ int setupIO(FILE* file);
 
 int main()
 {
-  size_t tlen, ulen, clen, total;
+  uint32_t tlen, ulen, clen, total;
   char* title, * url, * cookies;
   LPSTR lpCommandLine = NULL;
 

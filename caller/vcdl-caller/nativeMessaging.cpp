@@ -1,24 +1,25 @@
 #include <cstdlib>
 #include <cstdio>
+#include <cstdint>
 #include <cstring>
 
 #include "nativeMessaging.h"
 
-size_t sendToExtension(const char* msg)
+uint32_t sendToExtension(const char* msg)
 {
-  size_t len;
+  uint32_t len;
   if (!msg)
     return 0;
 
   len = strnlen(msg, MAX_MSG_LEN);
-  fwrite(&len, sizeof(size_t), 1, stdout);
+  fwrite(&len, sizeof(uint32_t), 1, stdout);
   return fwrite(msg, 1, len, stdout);
 }
 
-char* recieveFromExtension(size_t* len)
+char* recieveFromExtension(uint32_t* len)
 {
-  size_t sz;
-  fread(&sz, sizeof(size_t), 1, stdin);
+  uint32_t sz;
+  fread(&sz, sizeof(uint32_t), 1, stdin);
   *len = sz;
 
   char* msg = (char*)malloc(sz + 1);
