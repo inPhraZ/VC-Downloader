@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="download.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="vcdl-callee.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="download.cpp" />
     <ClCompile Include="vcdl-callee.cpp" />
   </ItemGroup>
   <ItemGroup>
