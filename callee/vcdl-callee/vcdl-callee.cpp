@@ -38,7 +38,6 @@ static int ParseCmdLine(LPDOWNLOADINFO dlinfo)
   return 0;
 }
 
-
 // Get path from user to save archive
 static int GetPathFromUser(LPDOWNLOADINFO dlinfo)
 {
@@ -88,6 +87,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   LPDOWNLOADINFO dlinfo = DownloadInfoAlloc();
   if (!dlinfo)
     exit(EXIT_FAILURE);
+
+  dlinfo->hInst = hInstance;
 
   if (ParseCmdLine(dlinfo) == -1) {
     DownloadInfoFree(dlinfo);
