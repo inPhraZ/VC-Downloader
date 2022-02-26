@@ -57,6 +57,12 @@ static int GetPathFromUser(LPDOWNLOADINFO dlinfo)
   if (!dlinfo->Path)
     return -1;
   ZeroMemory(dlinfo->Path, MAX_PATH + 1);
+
+  dlinfo->FileTitle = (LPWSTR)malloc(MAX_PATH + 1);
+  if (!dlinfo->FileTitle)
+    return -1;
+  ZeroMemory(dlinfo->FileTitle, MAX_PATH + 1);
+
   ZeroMemory(&ofn, sizeof(OPENFILENAME));
 
   ofn.lStructSize = sizeof(OPENFILENAME);
@@ -64,13 +70,13 @@ static int GetPathFromUser(LPDOWNLOADINFO dlinfo)
   ofn.lpstrTitle = szTitle;
   ofn.lpstrFilter = L"Archive Files (*.zip)\0*.zip\0All Files (*.*)\0*.*\0";
   ofn.lpstrFile = dlinfo->Path;
+  ofn.lpstrFileTitle = dlinfo->FileTitle;
+  ofn.nMaxFileTitle = MAX_PATH;
   ofn.nMaxFile = MAX_PATH;
   ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
   ofn.lpstrDefExt = L"zip";
-  if (GetSaveFileName(&ofn)) {
-    MessageBox(NULL, dlinfo->Path, L"Path", MB_OK);
+  if (GetSaveFileName(&ofn))
     return 0;
-  }
 
   return -1;
 }
@@ -86,6 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   // Initialize szTitle
   LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
+  return 1;
   LPDOWNLOADINFO dlinfo = DownloadInfoAlloc();
   if (!dlinfo)
     exit(EXIT_FAILURE);
@@ -99,8 +106,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     DownloadInfoFree(dlinfo);
     exit(EXIT_FAILURE);
   }
-  
-  DownloadArchive(dlinfo);
+
+  if (DownloadArchive(dlinfo) == -1)
+    MessageBox(NULL, L"Error: Download failed", L"VC Downloader", MB_OK | MB_ICONWARNING);
 
   DownloadInfoFree(dlinfo);
 
