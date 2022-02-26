@@ -3,6 +3,7 @@
 #include "framework.h"
 
 typedef struct {
+  LPWSTR  FileTitle;
   LPWSTR  Path;
   LPWSTR  Title;
   LPWSTR  URL;
