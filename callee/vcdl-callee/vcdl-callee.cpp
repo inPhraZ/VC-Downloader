@@ -1,11 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <codecvt>
-#include <locale>
-
 #include "vcdl-callee.h"
-
-using namespace std;
 
 #define MAX_LOADSTRING 100
 
