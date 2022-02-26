@@ -1,7 +1,11 @@
 #include "resource.h"
 #include "download.h"
 
-LPDOWNLOADINFO p_dlinfo;
+#include <iostream>
+#include <cstdlib>
+#include <cstdio>
+
+static LPDOWNLOADINFO p_dlinfo;
 
 LPDOWNLOADINFO  DownloadInfoAlloc()
 {
@@ -11,6 +15,25 @@ LPDOWNLOADINFO  DownloadInfoAlloc()
     return NULL;
   ZeroMemory(dlinfo, sizeof(DOWNLOADINFO));
   return dlinfo;
+}
+
+static int progress_callback(void* clientp,
+  curl_off_t dltotal,
+  curl_off_t dlnow,
+  curl_off_t ultotal,
+  curl_off_t ulnow)
+{
+  UINT prev = SendDlgItemMessage(p_dlinfo->currDlg, IDC_PROGRESS1, PBM_GETPOS, 0, 0);
+  if (dltotal > 0) {
+    WCHAR   prcntStr[5] = { 0 };
+    WPARAM  prcnt = (WPARAM)((dlnow * 100) / dltotal);
+    if (prev != prcnt) {
+      wsprintf(prcntStr, L"%d%%", prcnt);
+      SendDlgItemMessage(p_dlinfo->currDlg, IDC_PROGRESS1, PBM_SETPOS, prcnt, 0);
+      SetDlgItemText(p_dlinfo->currDlg, IDC_PERCENT, prcntStr);
+    }
+  }
+  return 0;
 }
 
 static size_t download_callback(void* ptr, size_t size, size_t nmemb, void* userdate)
@@ -26,14 +49,16 @@ static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
   char* url = (char*)malloc(1024);
   char* cookies = (char*)malloc(1024);
 
-  HWND prog = GetDlgItem(p_dlinfo->currDlg, IDC_PROGRESS1);
-
-  SendMessage(prog, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-  SendMessage(prog, PBM_SETPOS, (WPARAM)50, NULL);
+  WCHAR text[100] = { 0 };
+  wsprintf(text, L"Downloading (%s) ...", p_dlinfo->Title);
+  SendDlgItemMessage(p_dlinfo->currDlg, IDC_PROGRESS1, PBM_SETPOS, 0, 0);
+  SendDlgItemMessage(p_dlinfo->currDlg, IDC_PROGRESS1, PBM_SETBARCOLOR, 0, 0x00228B22);
+  SetDlgItemText(p_dlinfo->currDlg, IDC_STATIC, text);
+  SetDlgItemText(p_dlinfo->currDlg, IDC_PERCENT, L"0%");
 
   _wfopen_s(&p_dlinfo->fp, p_dlinfo->Path, L"wb");
   if (!p_dlinfo->fp)
-    return -1;
+    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
 
   url = (char*)malloc(1024);
   cookies = (char*)malloc(1024);
@@ -44,12 +69,16 @@ static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
   wcstombs_s(&len, cookies, 1024, p_dlinfo->Cookies, p_dlinfo->Cookies_len);
 
   p_dlinfo->curl = curl_easy_init();
-  if (!p_dlinfo->curl)
-    return -1;
+  if (!p_dlinfo->curl) {
+    fclose(p_dlinfo->fp);
+    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+  }
 
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_URL, url);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_COOKIE, cookies);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_SSL_VERIFYPEER, 0L);
+  curl_easy_setopt(p_dlinfo->curl, CURLOPT_XFERINFOFUNCTION, progress_callback);
+  curl_easy_setopt(p_dlinfo->curl, CURLOPT_NOPROGRESS, 0L);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_WRITEFUNCTION, download_callback);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_WRITEDATA, (void*)p_dlinfo);
   p_dlinfo->cres = curl_easy_perform(p_dlinfo->curl);
@@ -59,8 +88,19 @@ static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
   free(url);
   free(cookies);
 
-  if (p_dlinfo->cres != CURLE_OK)
-    return -1;
+  if (p_dlinfo->cres == CURLE_OK) {
+    WCHAR msg[100] = { 0 };
+    wsprintf(msg, L"%s Downloaded successfully", p_dlinfo->Title);
+    MessageBox(NULL, msg, L"VC Downloader", MB_OK);
+  }
+  else {
+    WCHAR errmsg[100] = { 0 };
+    size_t pReturnValue;
+    mbstowcs_s(&pReturnValue, errmsg, 100, curl_easy_strerror(p_dlinfo->cres), 100);
+    MessageBox(NULL, errmsg, L"VC Downloader", MB_ICONEXCLAMATION);
+  }
+
+  SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
 
   return 0;
 }
@@ -71,17 +111,18 @@ static LRESULT CALLBACK DialogDownloadProgress(HWND hwnd, UINT msg, WPARAM wPara
   {
   case WM_INITDIALOG:
     if (!CreateThread(0, 0, DownloaderThreadProc, NULL, 0, NULL)) {
-      MessageBox(NULL, L"CreateThread Failed", L"ERROR", MB_ICONEXCLAMATION);
-      DestroyWindow(hwnd);
+      MessageBox(NULL, L"Download thread failed", L"ERROR", MB_ICONEXCLAMATION);
       PostQuitMessage(-1);
     }
     break;
   case WM_COMMAND:
     break;
   case WM_CLOSE:
-    DestroyWindow(hwnd);
+    if (MessageBox(hwnd, L"Are you sure?", L"VC Downloader", MB_OKCANCEL) == IDOK)
+      PostQuitMessage(0);
+    break;
   case WM_DESTROY:
-    PostQuitMessage(-1);
+    PostQuitMessage(0);
     break;
   }
   return 0;
