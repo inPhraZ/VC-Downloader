@@ -10,9 +10,14 @@ typedef struct {
   SIZE_T  Title_len;
   SIZE_T  URL_len;
   SIZE_T  Cookies_len;
+  FILE*   fp;
+  CURL*   curl;
+  CURLcode  cres;
 } DOWNLOADINFO, *LPDOWNLOADINFO;
 
 LPDOWNLOADINFO    DownloadInfoAlloc();
+
+int DownloadArchive(LPDOWNLOADINFO dlinfo);
 
 #define DownloadInfoFree(dlinfo)    \
 do {                                \
