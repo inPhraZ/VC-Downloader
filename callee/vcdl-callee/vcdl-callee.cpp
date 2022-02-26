@@ -92,7 +92,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   // Initialize szTitle
   LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
-  return 1;
   LPDOWNLOADINFO dlinfo = DownloadInfoAlloc();
   if (!dlinfo)
     exit(EXIT_FAILURE);
@@ -107,9 +106,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     exit(EXIT_FAILURE);
   }
 
-  if (DownloadArchive(dlinfo) == -1)
+  if (DownloadArchive(dlinfo) == -1) {
     MessageBox(NULL, L"Error: Download failed", L"VC Downloader", MB_OK | MB_ICONWARNING);
+    DownloadInfoFree(dlinfo);
+    return 1;
+  }
 
+  MessageBox(NULL, L"Download completed successfully", L"VC Downloader", MB_OK);
   DownloadInfoFree(dlinfo);
 
   return 0;
