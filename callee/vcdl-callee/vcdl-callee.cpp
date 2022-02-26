@@ -100,6 +100,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     exit(EXIT_FAILURE);
   }
   
+  DownloadArchive(dlinfo);
+
   DownloadInfoFree(dlinfo);
 
   return 0;
