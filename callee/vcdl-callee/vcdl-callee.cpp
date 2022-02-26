@@ -106,7 +106,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return 1;
   }
 
-  MessageBox(NULL, L"Download completed successfully", L"VC Downloader", MB_OK);
   DownloadInfoFree(dlinfo);
 
   return 0;
