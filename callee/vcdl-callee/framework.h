@@ -5,8 +5,10 @@
 
 // Windows Header Files
 #include <windows.h>
+#include <WinUser.h>
 #include <shellapi.h>
 #include <commdlg.h>
+#include <CommCtrl.h>
 
 // C RunTime Header Files
 #include <stdlib.h>
