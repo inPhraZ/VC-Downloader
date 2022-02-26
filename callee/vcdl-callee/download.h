@@ -3,6 +3,8 @@
 #include "framework.h"
 
 typedef struct {
+  HINSTANCE hInst;
+  HWND    currDlg;
   LPWSTR  FileTitle;
   LPWSTR  Path;
   LPWSTR  Title;
