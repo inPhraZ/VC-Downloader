@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener(
         console.log('Cookies length: ' + g_cookies.length)
         console.log('Cookies to send: ' + g_cookies)
 
-        var port = chrome.runtime.connectNative("ir.ac.hormozgan.downloader.vc")
+        var port = chrome.runtime.connectNative("com.github.downloader.vc")
         port.postMessage(g_title)
         
         port.onMessage.addListener(function (message) {
