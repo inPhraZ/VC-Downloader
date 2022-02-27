@@ -42,7 +42,6 @@ int main()
   free(url);
   free(cookies);
 
-#if 0
   LPSTARTUPINFOA  startup_info;
   LPPROCESS_INFORMATION proc_info;
 
@@ -63,10 +62,9 @@ int main()
   ZeroMemory(startup_info, sizeof(STARTUPINFOA));
   ZeroMemory(proc_info, sizeof(PROCESS_INFORMATION));
 
-  BOOL res = CreateProcessA("", lpCommandLine, 
+  BOOL res = CreateProcessA("vcdl-callee.exe", lpCommandLine, 
     NULL, NULL, FALSE, 0, NULL, NULL,
     startup_info, proc_info);
-#endif
 
   free(lpCommandLine);
 
