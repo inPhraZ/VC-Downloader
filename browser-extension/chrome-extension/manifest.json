@@ -4,7 +4,7 @@
     "description": "Download Adobe Virtual Classes",
     "content_scripts": [
         {
-            "matches": ["https://*.hormozgan.ac.ir/*"],
+            "matches": ["<all_urls>"],
             "js": ["content.js"]
         }
     ],
