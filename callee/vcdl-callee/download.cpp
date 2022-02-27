@@ -110,10 +110,22 @@ static LRESULT CALLBACK DialogDownloadProgress(HWND hwnd, UINT msg, WPARAM wPara
   switch (msg)
   {
   case WM_INITDIALOG:
+  {
+    HICON hIcon;
+    hIcon = (HICON)LoadImageW(GetModuleHandleW(NULL),
+      MAKEINTRESOURCEW(IDI_SMALL),
+      IMAGE_ICON,
+      GetSystemMetrics(SM_CXSMICON),
+      GetSystemMetrics(SM_CYSMICON),
+      0);
+    if (hIcon)
+      SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+
     if (!CreateThread(0, 0, DownloaderThreadProc, NULL, 0, NULL)) {
       MessageBox(NULL, L"Download thread failed", L"ERROR", MB_ICONEXCLAMATION);
       PostQuitMessage(-1);
     }
+  }
     break;
   case WM_COMMAND:
     break;
