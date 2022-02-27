@@ -3,12 +3,8 @@ var g_url = ''
 var g_cookies = ''
 
 chrome.cookies.onChanged.addListener(function (changeInfo) {
-    var removed = changeInfo.removed
     var cookie = changeInfo.cookie
-    var cause = changeInfo.cause
-
     var name = cookie.name
-    var domain = cookie.domain
     var value = cookie.value
 
     if (g_cookies.includes(name) == false)
