@@ -7,12 +7,14 @@
 #include <windows.h>
 #include <WinUser.h>
 #include <shellapi.h>
+#include <Shlwapi.h>
 #include <commdlg.h>
 #include <CommCtrl.h>
 
 // C RunTime Header Files
 #include <stdlib.h>
 #include <malloc.h>
+#include <cerrno>
 #include <memory.h>
 #include <tchar.h>
 #define CURL_STATICLIB
