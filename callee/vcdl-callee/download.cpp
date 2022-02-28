@@ -28,9 +28,10 @@ static char* wide_to_char(LPWSTR src)
   dest = (char*)malloc(newSize);
   if (!dest) {
     MessageBoxA(NULL, strerror(errno), "Error", MB_ICONEXCLAMATION);
-    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+    return NULL;
   }
   wcstombs_s(&convertedChars, dest, newSize, src, _TRUNCATE);
+  return dest;
 }
 
 static int progress_callback(void* clientp,
@@ -120,7 +121,7 @@ static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
     MessageBox(NULL, errmsg, L"VC Downloader", MB_ICONEXCLAMATION);
   }
 
-  SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+  SendMessage(p_dlinfo->currDlg, WM_QUIT, 0, 0);
 
   return 0;
 }
@@ -154,6 +155,9 @@ static LRESULT CALLBACK DialogDownloadProgress(HWND hwnd, UINT msg, WPARAM wPara
       PostQuitMessage(0);
     break;
   case WM_DESTROY:
+    PostQuitMessage(-1);
+    break;
+  case WM_QUIT:
     PostQuitMessage(0);
     break;
   }
