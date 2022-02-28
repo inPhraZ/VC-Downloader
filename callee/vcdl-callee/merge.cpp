@@ -38,8 +38,7 @@ int ExtractArchive(LPDOWNLOADINFO dlinfo)
   WCHAR curr[MAX_PATH + 1] = { 0 };
   DWORD s;
   GetCurrentDirectory(MAX_PATH, curr);
-  MessageBox(NULL, curr, L"current", MB_OK);
-  MessageBox(NULL, lpCmdLine, L"arguments", MB_OK);
+
   res = CreateProcess(L"7za.exe", lpCmdLine,
     NULL, NULL, FALSE, 0, NULL, NULL,
     startup_info, proc_info);
