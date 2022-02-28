@@ -30,12 +30,18 @@
     <ClInclude Include="download.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="merge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vcdl-callee.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="download.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="merge.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
