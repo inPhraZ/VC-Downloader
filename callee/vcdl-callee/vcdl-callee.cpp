@@ -65,7 +65,7 @@ static int GetPathFromUser(LPDOWNLOADINFO dlinfo)
   ofn.lpstrFileTitle = dlinfo->FileTitle;
   ofn.nMaxFileTitle = MAX_PATH;
   ofn.nMaxFile = MAX_PATH;
-  ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+  ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NOCHANGEDIR;
   ofn.lpstrDefExt = L"zip";
   if (GetSaveFileName(&ofn))
     return 0;
@@ -102,6 +102,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
   if (DownloadArchive(dlinfo) == -1) {
     MessageBox(NULL, L"Error: Download failed", L"VC Downloader", MB_OK | MB_ICONWARNING);
+    DownloadInfoFree(dlinfo);
+    return 1;
+  }
+
+  if (ExtractArchive(dlinfo) == -1) {
+    MessageBox(NULL, L"Error: Extracting files failed", L"VC Downloader", MB_OK | MB_ICONWARNING);
     DownloadInfoFree(dlinfo);
     return 1;
   }
