@@ -1,10 +1,6 @@
 #include "resource.h"
 #include "download.h"
 
-#include <iostream>
-#include <cstdlib>
-#include <cstdio>
-
 static LPDOWNLOADINFO p_dlinfo;
 
 LPDOWNLOADINFO  DownloadInfoAlloc()
@@ -15,6 +11,26 @@ LPDOWNLOADINFO  DownloadInfoAlloc()
     return NULL;
   ZeroMemory(dlinfo, sizeof(DOWNLOADINFO));
   return dlinfo;
+}
+
+static char* wide_to_char(LPWSTR src)
+{
+  size_t convertedChars = 0;
+  size_t origSize = 0;
+  size_t newSize = 0;
+  char* dest = NULL;
+
+  if (!src)
+    return NULL;
+
+  origSize = wcslen(src) + 1;
+  newSize = origSize * 2;
+  dest = (char*)malloc(newSize);
+  if (!dest) {
+    MessageBoxA(NULL, strerror(errno), "Error", MB_ICONEXCLAMATION);
+    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+  }
+  wcstombs_s(&convertedChars, dest, newSize, src, _TRUNCATE);
 }
 
 static int progress_callback(void* clientp,
@@ -46,8 +62,8 @@ static size_t download_callback(void* ptr, size_t size, size_t nmemb, void* user
 static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
 {
   size_t len = 0;
-  char* url = (char*)malloc(1024);
-  char* cookies = (char*)malloc(1024);
+  char* url;
+  char* cookies;
 
   WCHAR text[100] = { 0 };
   wsprintf(text, L"Downloading (%s) ...", p_dlinfo->Title);
@@ -56,24 +72,28 @@ static DWORD WINAPI DownloaderThreadProc(LPVOID lpParameter)
   SetDlgItemText(p_dlinfo->currDlg, IDC_STATIC, text);
   SetDlgItemText(p_dlinfo->currDlg, IDC_PERCENT, L"0%");
 
-  _wfopen_s(&p_dlinfo->fp, p_dlinfo->Path, L"wb");
-  if (!p_dlinfo->fp)
+  url = wide_to_char(p_dlinfo->URL);
+  if (!url)
     SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
 
-  url = (char*)malloc(1024);
-  cookies = (char*)malloc(1024);
-  ZeroMemory(url, 1024);
-  ZeroMemory(cookies, 1024);
-
-  wcstombs_s(&len, url, 1024, p_dlinfo->URL, p_dlinfo->URL_len);
-  wcstombs_s(&len, cookies, 1024, p_dlinfo->Cookies, p_dlinfo->Cookies_len);
+  cookies = wide_to_char(p_dlinfo->Cookies);
+  if (!cookies) {
+    free(url);
+    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+  }
+  
+  _wfopen_s(&p_dlinfo->fp, p_dlinfo->Path, L"wb");
+  if (!p_dlinfo->fp) {
+    MessageBox(NULL, _wcserror(errno), L"VC Downloader", MB_ICONEXCLAMATION);
+    SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
+  }
 
   p_dlinfo->curl = curl_easy_init();
   if (!p_dlinfo->curl) {
     fclose(p_dlinfo->fp);
     SendMessage(p_dlinfo->currDlg, WM_DESTROY, 0, 0);
   }
-
+  
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_URL, url);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_COOKIE, cookies);
   curl_easy_setopt(p_dlinfo->curl, CURLOPT_SSL_VERIFYPEER, 0L);
