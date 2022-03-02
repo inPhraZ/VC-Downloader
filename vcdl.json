@@ -1,0 +1,7 @@
+{
+  "name": "com.github.downloader.vc",
+  "description": "Download Adobe Virtual Classes",
+  "type": "stdio",
+  "allowed_origins": [ "chrome-extension:///" ],
+  "path": "vcdl-caller.exe"
+}
